@@ -1,9 +1,16 @@
 <HTML>
     <HEAD>
         <TITLE>Portfolio</TITLE>
+
+        <LINK rel="stylesheet" href="/autoComplete.css">
         <LINK rel="stylesheet" href="/research.css">
+
+        <SCRIPT type="text/javascript" src="/commonStocks.js"></SCRIPT>
+        <SCRIPT type="text/javascript" src="/autoCompleteTextBox.js"></SCRIPT>
         <SCRIPT type="text/javascript">
             window.onload = function () {
+                makeAutoCompleteTextBox(document.getElementById("stockSymbol"), commonStocks);
+
                 var chart = new CanvasJS.Chart("chartContainer", {
                     theme: "light1",
                     animationEnabled: true,
@@ -27,9 +34,15 @@
         <H1>Research</H1>
         {{{errorMessage}}}
         <FORM autocomplete="off" method="POST" action="/research">
-            <label>Stock Symbol</label>
-            <INPUT type="text" id="stockSymbol" name="stockSymbol" value="">
-            <INPUT type="submit">
+            <TABLE>
+                <TR>
+                    <TD>Stock Symbol</TD>
+                    <TD><div class="autocomplete">
+                        <INPUT type="text" id="stockSymbol" name="stockSymbol" placeholder="Type here for suggestions...">
+                    </div></TD>
+                    <TD><INPUT type="submit"></TD>
+                </TR>
+            </TABLE>
         </FORM>
         <BR>
         {{{stockStatistics}}}

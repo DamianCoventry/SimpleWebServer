@@ -69,6 +69,7 @@ def getFileContents(fileName):
         return None
 
 
+# this function supports the general use case of a browser requesting an arbitrary file from the server
 def loadAndReturnFile(requestUri):
     try:
         fullPath = os.getcwd() + str(requestUri)
@@ -97,13 +98,13 @@ def loadPortfolioData():
         return json.load(f)
 
 
-# writing out the data as JSON, therefore we must use UTF8
+# we're writing out the data as JSON, therefore we must use UTF8
 def savePortfolioData(portfolio):
     with open(PORTFOLIO_DATABASE, 'w', encoding='utf-8') as f:
         json.dump(portfolio, f, ensure_ascii=False, indent=4)
 
 
-# returns something like ['GET', '/favicon.ico', 'HTTP/1.1']
+# returns something like ['GET', '/portfolio', 'HTTP/1.1']
 def getRequestLine(headerArray):
     return headerArray[0].split()
 
@@ -222,7 +223,7 @@ def isPositiveFloat(text):
 #   • quantity is a required value
 #   • quantity must be an integer
 #   • quantity's value be < 0, or > 0, not == 0
-#   • price is a required value if quantity meets all of its rules
+#   • price is a required value if quantity meets all of its business rules
 #   • price must be an integer or float
 #   • price's value must be > 0
 # a string is returned if a rule is broken, None otherwise
@@ -277,7 +278,7 @@ def buyStock(portfolio, symbol, quantity, price):
     return None
 
 
-# this function implements the rules for selling stock
+# this function implements the business rules for selling stock:
 #   • you cannot sell more than you own
 #   • if you sell all of your stock, then it's removed from your portfolio
 #   • stock price is unaffected by the sale of stock
@@ -301,8 +302,8 @@ def calculateNewPrice(oldQuantity, oldPrice, newQuantity, newPrice):
     return (oldQuantity * oldPrice + newQuantity * newPrice) / total
 
 
-# this function implements the rules for adjusting stock of a specific symbol that's already owned. the quantity
-# dictates either we're selling, or we're acquiring more of what we already have.
+# this function implements the business rules for adjusting stock of a specific symbol that's already owned. the
+# quantity dictates either we're selling, or we're acquiring more of what we already have.
 def adjustStock(portfolio, ownedStock, newQuantity, newPrice):
     if newQuantity < 0:
         return sellStock(portfolio, ownedStock, abs(newQuantity))
@@ -312,7 +313,7 @@ def adjustStock(portfolio, ownedStock, newQuantity, newPrice):
     return None
 
 
-# this function implements the algorithm for adding, modifying, or deleting stock.
+# this function implements the algorithm for adding, modifying, and deleting stock.
 # in this order, the algorithm is:
 #   1) extract required inputs from form variables. these were validated for correctness earlier.
 #   2) portfolio data are read from disk
@@ -611,11 +612,12 @@ def generatePortfolioPage(errorMessage):
         })
 
 
+# creates a javascript array on the fly from all common stock symbols
 def generateCommonStocksJs():
     return commonStocksJs({'stockSymbols': generateStockSymbolsJsArray()})
 
 
-# the research page is originally presented devoid of all data. the user must enter a stock symbol and submit it.
+# the research page is originally presented devoid of all data. the user must enter a stock symbol and submits it.
 # this server responds by retrieving statistics for that stock, then generating HTML on the fly from some of those
 # statistics. this server also retrieves data points for the stock for use in a client side graph. finally, the
 # research page can display an error message.

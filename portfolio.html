@@ -1,9 +1,17 @@
 <HTML>
     <HEAD>
         <TITLE>Portfolio</TITLE>
+
+        <LINK rel="stylesheet" href="/autoComplete.css">
         <LINK rel="stylesheet" href="/portfolio.css">
+
         <SCRIPT type="text/javascript" src="/commonStocks.js"></SCRIPT>
-        <SCRIPT type="text/javascript" src="/portfolio.js"></SCRIPT>
+        <SCRIPT type="text/javascript" src="/autoCompleteTextBox.js"></SCRIPT>
+        <SCRIPT type="text/javascript">
+            window.onload = function () {
+                makeAutoCompleteTextBox(document.getElementById("symbol"), commonStocks);
+            }
+        </SCRIPT>
     </HEAD>
     <BODY>
         <H1>Portfolio</H1>

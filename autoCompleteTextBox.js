@@ -1,9 +1,5 @@
 // https://www.w3schools.com/howto/howto_js_autocomplete.asp
 
-window.onload = function () {
-    makeAutoCompleteTextBox(document.getElementById("symbol"), commonStocks);
-}
-
 function makeAutoCompleteTextBox(textBox, stockSymbols) {
     var currentFocus;
 

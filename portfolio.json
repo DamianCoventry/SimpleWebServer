@@ -43,5 +43,10 @@
         "symbol": "VGFC",
         "quantity": 345,
         "price": 2.5
+    },
+    {
+        "symbol": "HAL",
+        "quantity": 200,
+        "price": 2.5
     }
 ]
