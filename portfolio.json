@@ -45,8 +45,8 @@
         "price": 2.5
     },
     {
-        "symbol": "HAL",
-        "quantity": 200,
-        "price": 2.5
+        "symbol": "JACK",
+        "quantity": 2,
+        "price": 3
     }
 ]

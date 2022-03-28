@@ -195,7 +195,9 @@ def extractFormVariables(rawFormVariables):
     form = {}
     for nameValue in varNameAndValue:
         nv = nameValue.split('=')
-        form[nv[0]] = nv[1]
+        if nv is not None and len(nv) == 2:
+            print(nv[0] + " = [" + nv[1] + "]")
+            form[nv[0]] = nv[1]
     return form
 
 
@@ -228,7 +230,10 @@ def isPositiveFloat(text):
 #   • price's value must be > 0
 # a string is returned if a rule is broken, None otherwise
 def validateFormVariables(form):
-    if form['quantity'] is None or len(form['quantity']) == 0:
+    if 'symbol' not in form or len(form['symbol']) == 0:
+        return ERROR_PREFIX + 'A <I>symbol</I> was not supplied. This field is required.' + ERROR_SUFFIX
+
+    if 'quantity' not in form or len(form['quantity']) == 0:
         return ERROR_PREFIX + 'A <I>quantity</I> was not supplied. This field is required.' + ERROR_SUFFIX
 
     if not isInteger(form['quantity'], False):
@@ -242,7 +247,7 @@ def validateFormVariables(form):
         # then the user is selling stock, no need to test the price
         return None
 
-    if form['price'] is None or len(form['price']) == 0:
+    if 'price' not in form or len(form['price']) == 0:
         return ERROR_PREFIX + 'A <I>price</I> was not supplied. This field is required.' + ERROR_SUFFIX
 
     if not isInteger(form['price'], True) and not isPositiveFloat(form['price']):
@@ -415,7 +420,7 @@ def getChartDataPoints(stockSymbol):
 # note that if the user specified a stock symbol that doesn't exist on the remote host, then the IEX API
 # returns the text 'Not Found'
 def processResearchRequest(form):
-    if form is None or form['stockSymbol'] is None or len(form['stockSymbol']) == 0:
+    if 'stockSymbol' not in form or len(form['stockSymbol']) == 0:
         errorMessage = ERROR_PREFIX + 'A <I>symbol</I> was not supplied. This field is required.' + ERROR_SUFFIX
         return generateResearchPage(HIDE, '', '', errorMessage)
 
@@ -446,10 +451,15 @@ def processResearchRequest(form):
         dataPointsJson = json.loads(dataPoints)
         # convert to JavaScript syntax
         for dataPoint in dataPointsJson:
-            dataPointsJs += '{ label: "' + dataPoint['date'] + '", y: ' + str(dataPoint['close']) + ' },\n'
+            if 'date' in dataPoint and 'close' in dataPoint:
+                dataPointsJs += '{ label: "' + dataPoint['date'] + '", y: ' + str(dataPoint['close']) + ' },\n'
         dataPointsJs = dataPointsJs.rstrip(',')
 
-    return generateResearchPage(statisticsHtml, statisticsJson['companyName'], dataPointsJs, HIDE)
+    companyName = 'No company name'
+    if 'companyName' in statisticsJson:
+        companyName = statisticsJson['companyName']
+
+    return generateResearchPage(statisticsHtml, companyName, dataPointsJs, HIDE)
 
 
 # this is for developer convenience
@@ -530,13 +540,13 @@ def processHttpRequest(password, request):
         elif requestLine[0] == HTTP_VERB_POST:
 
             form = extractFormVariables(requestHeaders[len(requestHeaders) - 1])
-            if requestLine[1] == RESEARCH_URI:
-                # retrieve the stock statistics, then build a research page from them
-                responseBody = processResearchRequest(form).encode()
-                print('200 OK')
-            elif requestLine[1] == PORTFOLIO_URI:
+            if requestLine[1] == PORTFOLIO_URI:
                 # add, modify, or delete to/from the stock portfolio, then build a portfolio page from them
                 responseBody = processPortfolioUpdate(form).encode()
+                print('200 OK')
+            elif requestLine[1] == RESEARCH_URI:
+                # retrieve the stock statistics, then build a research page from them
+                responseBody = processResearchRequest(form).encode()
                 print('200 OK')
             else:
                 responseHeaders, responseBody = makeResponse(400, None)
@@ -547,24 +557,39 @@ def processHttpRequest(password, request):
     return responseHeaders, responseBody
 
 
+def mySendAll(s, data):
+    i = 0
+    while i < len(data):
+        numSent = s.send(data[i:])
+        i += numSent
+        print("sent " + str(numSent) + " bytes (" + str(i) + "/" + str(len(data)) + ")")
+
+
 # this function provides a path that guarantees the socket will be closed
 def processTcpConnection(remoteSocket):
     try:
+        remoteSocket.settimeout(60)
         receivedBytes = remoteSocket.recv(MAX_RECEIVED_BYTES)
         if len(receivedBytes) > 0:
             headers, body = processHttpRequest(passwordFromFile, receivedBytes)
-            remoteSocket.send(headers.encode())
+            # remoteSocket.sendall(headers.encode())
+            mySendAll(remoteSocket, headers.encode())
             if body is not None:
-                remoteSocket.send(body)
+                remoteSocket.settimeout(60)
+                # remoteSocket.sendall(body)
+                mySendAll(remoteSocket, body)
 
     except Exception as e:
         print('processTcpConnection: caught [' + str(e) + ']')
-
-    remoteSocket.close()
+    finally:
+        print('processTcpConnection: closing remote socket')
+        remoteSocket.close()
 
 
 # configure a TCP socket for listening
 serverPort = SERVER_TCP_PORT
+if os.environ.get('PORT') is not None:
+    serverPort = int(os.environ.get('PORT'))        # the heroku system expects us to use their random port
 serverSocket = socket(AF_INET, SOCK_STREAM)
 serverSocket.bind(('', serverPort))
 serverSocket.listen(1)
@@ -636,12 +661,17 @@ passwordFromFile = getPasswordFromFile()
 print('The server is ready to receive HTTP requests.')
 
 while True:
-    clientSocket, address = serverSocket.accept()
+    try:
+        clientSocket, address = serverSocket.accept()
 
-    if passwordFromFile is None:
-        # we're not going to provide a service without basic authentication configured
-        clientSocket.send(HTTP_HEADER_503.encode())
-        clientSocket.send(getFileContents('503.html'))
-        clientSocket.close()
-    else:
-        _thread.start_new_thread(processTcpConnection, (clientSocket,))
+        if passwordFromFile is None:
+            # we're not going to provide a service without basic authentication configured
+            clientSocket.settimeout(60)
+            clientSocket.sendall(HTTP_HEADER_503.encode())
+            clientSocket.sendall(getFileContents('503.html'))
+            clientSocket.close()
+        else:
+            _thread.start_new_thread(processTcpConnection, (clientSocket,))
+
+    except Exception as ex:
+        print('main: caught [' + str(ex) + ']')
