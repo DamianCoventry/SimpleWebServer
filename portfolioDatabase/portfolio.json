@@ -1,0 +1,42 @@
+[
+    {
+        "symbol": "MFM",
+        "quantity": 100,
+        "price": 6.5
+    },
+    {
+        "symbol": "PBBK",
+        "quantity": 150,
+        "price": 13.34
+    },
+    {
+        "symbol": "HUMA",
+        "quantity": 750,
+        "price": 5.67
+    },
+    {
+        "symbol": "QTNT",
+        "quantity": 200,
+        "price": 0.8424139072847683
+    },
+    {
+        "symbol": "QTEK",
+        "quantity": 560,
+        "price": 2.7
+    },
+    {
+        "symbol": "SHEN",
+        "quantity": 125,
+        "price": 18.55
+    },
+    {
+        "symbol": "PETS",
+        "quantity": 350,
+        "price": 21.95
+    },
+    {
+        "symbol": "GAIA",
+        "quantity": 100,
+        "price": 10
+    }
+]

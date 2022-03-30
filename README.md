@@ -35,4 +35,4 @@ After changing to the directory with the source files, execute this sequence of 
 
 `heroku container:release web --app web-dev-assgn1-159352`
 
-Open a web browser and navigate to http://web-dev-assgn1-159352.herokuapp.com/
+Open a web browser and navigate to https://web-dev-assgn1-159352.herokuapp.com/

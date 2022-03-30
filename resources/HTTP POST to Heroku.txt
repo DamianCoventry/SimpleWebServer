@@ -1,0 +1,29 @@
+POST /portfolio HTTP/1.1
+Host: web-dev-assgn1-159352.herokuapp.com
+Connection: close
+Cache-Control: max-age=0
+Authorization: Basic MjEwMTQxMDc6MjEwMTQxMDc=
+Sec-Ch-Ua: " Not A;Brand";v="99", "Chromium";v="99", "Google Chrome";v="99"
+Sec-Ch-Ua-Mobile: ?0
+Sec-Ch-Ua-Platform: "Windows"
+Upgrade-Insecure-Requests: 1
+Origin: https://web-dev-assgn1-159352.herokuapp.com
+Content-Type: application/x-www-form-urlencoded
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.82 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Referer: https://web-dev-assgn1-159352.herokuapp.com/
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9
+X-Request-Id: b775ce25-5d12-46db-ab62-47ae2f9343d5
+X-Forwarded-For: 101.98.217.247
+X-Forwarded-Proto: https
+X-Forwarded-Port: 443
+Via: 1.1 vegur
+Connect-Time: 0
+X-Request-Start: 1648459848034
+Total-Route-Time: 0
+Content-Length: 30
