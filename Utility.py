@@ -1,12 +1,14 @@
-#
-# Designed and written by Damian Coventry
-# Copyright (c) 2022, all rights reserved
-#
-# Massey University
-# 159.352 Advanced Web Development
-# Assignment 1
-# 2022 Semester 1
-#
+"""
+Designed and written by Damian Coventry
+Copyright (c) 2022, all rights reserved
+
+Massey University
+159.352 Advanced Web Development
+Assignment 1
+2022 Semester 1
+
+Using the https://peps.python.org/pep-0258/ convention
+"""
 
 import os
 import sys

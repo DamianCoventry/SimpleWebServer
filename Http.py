@@ -1,17 +1,24 @@
-#
-# Designed and written by Damian Coventry
-# Copyright (c) 2022, all rights reserved
-#
-# Massey University
-# 159.352 Advanced Web Development
-# Assignment 1
-# 2022 Semester 1
-#
+"""
+Designed and written by Damian Coventry
+Copyright (c) 2022, all rights reserved
+
+Massey University
+159.352 Advanced Web Development
+Assignment 1
+2022 Semester 1
+
+Using the https://peps.python.org/pep-0258/ convention
+"""
 
 from typing import Final
 
 
 class Http:
+    """
+    This class eases maintenance by providing a single location in the source code
+    for commonly used Http related strings
+    """
+
     VERSION: Final = 'HTTP/1.1'
 
     GET: Final = 'GET'

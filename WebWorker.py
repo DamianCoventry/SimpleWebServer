@@ -1,12 +1,14 @@
-#
-# Designed and written by Damian Coventry
-# Copyright (c) 2022, all rights reserved
-#
-# Massey University
-# 159.352 Advanced Web Development
-# Assignment 1
-# 2022 Semester 1
-#
+"""
+Designed and written by Damian Coventry
+Copyright (c) 2022, all rights reserved
+
+Massey University
+159.352 Advanced Web Development
+Assignment 1
+2022 Semester 1
+
+Using the https://peps.python.org/pep-0258/ convention
+"""
 
 import _thread
 from typing import Final
@@ -52,7 +54,7 @@ class WebWorker:
         self._iexApi: Final = IexApi(self._IEX_API_KEY)
         self._portfolio = Portfolio(self._PORTFOLIO_DB, self._iexApi)
 
-        self._responseBuilder: Final = HttpResponseBuilder(Http.VERSION, Http.HEADER_SEP)
+        self._responseBuilder: Final = HttpResponseBuilder(Http.VERSION)
         self._htmlPageBuilder: Final = HtmlPageBuilder()
         self._jsFileBuilder: Final = JsFileBuilder()
 
@@ -177,7 +179,7 @@ class WebWorker:
         return self._makeResearchPage(self._NO_ERROR, '', '', self._EMPTY_HTML)
 
     def _browseToCommonStocks(self, _):
-        symbols = self._iexApi.fetchSymbols()
+        symbols = self._iexApi.fetchCommonStockSymbols()
         headers = self._responseBuilder.makeOK()
         body = self._jsFileBuilder.makeCommonStocksFile(makeJavascriptSymbolArray(symbols))
         return headers, body
@@ -231,7 +233,7 @@ class WebWorker:
 
             case Portfolio.Result.NOT_ENOUGH_STOCK:
                 errorMessage = self._makeErrorText(
-                    'You cannot sell more stock than you own (i.e. short selling')
+                    'You cannot sell more stock than you own (i.e. short selling)')
 
         return self._makePortfolioPage(errorMessage)
 
@@ -346,7 +348,7 @@ class WebWorker:
         return companyNameJs, statisticsHtml
 
     def _makeChartDataPointsJs(self, symbol):
-        dataPoints = self._iexApi.fetchChart(symbol)
+        dataPoints = self._iexApi.fetchChartDataPoints(symbol)
         if isNoneOrEmpty(dataPoints):
             return ''
 
