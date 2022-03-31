@@ -10,6 +10,7 @@
 
 import base64
 from Http import Http
+from Utility import isNoneOrEmpty
 
 
 class HttpRequest:
@@ -41,7 +42,7 @@ class HttpRequest:
         return Http.CONTENT_LENGTH in self._headers
 
     def hasEmptyBody(self):
-        return self._body is None or len(self._body) == 0
+        return isNoneOrEmpty(self._body)
 
     def getBody(self):
         return self._body
@@ -54,7 +55,7 @@ class HttpRequest:
             return {}
 
         nameValueAssignments = self._body.decode('UTF-8').split(Http.FORM_VAR_SEP)
-        if nameValueAssignments is None or len(nameValueAssignments) == 0:
+        if isNoneOrEmpty(nameValueAssignments):
             return {}
 
         form = {}
@@ -85,11 +86,11 @@ class HttpRequest:
         self._headers = {}
         self._body = b''
 
-        if rawBytes is None or len(rawBytes) == 0:
+        if isNoneOrEmpty(rawBytes):
             return
 
         lines = rawBytes.decode('UTF-8').splitlines(False)
-        if lines is None or len(lines) == 0:
+        if isNoneOrEmpty(lines):
             return
 
         self._requestLine = lines[0].split()

@@ -16,7 +16,7 @@ from Utility import *
 
 
 class IexApi:
-    _PLEASE_UPGRADE_MESSAGE: Final = 'You have used all available credits for the month. Please upgrade ' + \
+    _PLEASE_UPGRADE_MESSAGE: Final = 'You have used all available credits for the month. Please upgrade ' +\
                                       'or purchase additional packages to access more data.'
 
     def __init__(self, apiKey):
@@ -41,7 +41,9 @@ class IexApi:
 
     def _fetchJson(self, uri, alternative):
         logMessage(f'IEX: {uri}')
-        jsonText = requests.get(uri + '?token=' + self._apiKey).text
+
+        token = '&token=' if uri.rfind('?') >= 0 else '?token='
+        jsonText = requests.get(uri + token + self._apiKey).text
 
         if jsonText == self._PLEASE_UPGRADE_MESSAGE:
             logMessage(f'Using cached data from \'{alternative}\'')

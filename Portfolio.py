@@ -1,7 +1,7 @@
 import json
 import os
 from enum import Enum
-from Utility import calculateStockPrice
+from Utility import *
 
 
 class Portfolio:
@@ -21,7 +21,7 @@ class Portfolio:
         return self._stocks is not None
 
     def save(self):
-        if self._stocks is None:
+        if isNoneOrEmpty(self._stocks):
             return False
 
         with open(self._fileName, 'w', encoding='utf-8') as f:
@@ -48,7 +48,7 @@ class Portfolio:
         return self._buy(symbol, quantity, price)
 
     def _isOwned(self, symbol):
-        if self._stocks is None:
+        if isNoneOrEmpty(self._stocks):
             return False
 
         for stock in self._stocks:

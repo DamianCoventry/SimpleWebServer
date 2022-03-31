@@ -64,7 +64,11 @@ def isInteger(text, testIfPositive):
 # str.isdecimal() can't detect negative numbers
 def isPositiveFloat(text):
     try:
-        float(text)
-        return True
+        f = float(text)
+        return f > .0
     except ValueError:
         return False
+
+
+def isNoneOrEmpty(x):
+    return x is None or len(x) == 0

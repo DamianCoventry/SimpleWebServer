@@ -16,30 +16,30 @@ from Utility import loadFileContents
 
 # https://en.wikipedia.org/wiki/Builder_pattern
 class HtmlPageBuilder:
-    _PORTFOLIO_PAGE: Final = 'sitePages/portfolio.html'
-    _RESEARCH_PAGE: Final = 'sitePages/research.html'
-    _500_ERROR_PAGE: Final = 'errorPages/500.html'
+    _PORTFOLIO_TEMPLATE: Final = 'sitePages/portfolio.html'
+    _RESEARCH_TEMPLATE: Final = 'sitePages/research.html'
+    _500_ERROR_TEMPLATE: Final = 'errorPages/500.html'
 
     def __init__(self):
         self._pybars = Compiler()
-        self._portfolioPage = self._pybars.compile(loadFileContents(self._PORTFOLIO_PAGE).decode('UTF-8'))
-        self._researchPage = self._pybars.compile(loadFileContents(self._RESEARCH_PAGE).decode('UTF-8'))
-        self._500ErrorPage = self._pybars.compile(loadFileContents(self._500_ERROR_PAGE).decode('UTF-8'))
+        self._portfolioTemplate = self._pybars.compile(loadFileContents(self._PORTFOLIO_TEMPLATE).decode('UTF-8'))
+        self._researchTemplate = self._pybars.compile(loadFileContents(self._RESEARCH_TEMPLATE).decode('UTF-8'))
+        self._500ErrorTemplate = self._pybars.compile(loadFileContents(self._500_ERROR_TEMPLATE).decode('UTF-8'))
 
     def makePortfolioPage(self, errorMessage, stockRows):
-        return self._portfolioPage(
+        return self._portfolioTemplate(
             {
                 'errorMessage': errorMessage,
                 'stockRows': stockRows
             }).encode()
 
-    def makeResearchPage(self, errorMessage, companyName, dataPoints, stockStatistics):
-        return self._researchPage(
+    def makeResearchPage(self, errorMessage, companyNameJs, dataPointsJs, statisticsHtml):
+        return self._researchTemplate(
             {
                 'errorMessage': errorMessage,
-                'companyName': companyName,
-                'dataPoints': dataPoints,
-                'stockStatistics': stockStatistics
+                'companyName': companyNameJs,
+                'dataPoints': dataPointsJs,
+                'stockStatistics': statisticsHtml
             }).encode()
 
     def makeErrorPage(self, responseCode, errorMessage):
@@ -47,4 +47,4 @@ class HtmlPageBuilder:
         if os.path.exists(fileName) and responseCode != 500:
             return loadFileContents(fileName)
 
-        return self._500ErrorPage({'errorMessage': errorMessage}).encode()
+        return self._500ErrorTemplate({'errorMessage': errorMessage}).encode()

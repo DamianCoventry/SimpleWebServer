@@ -15,12 +15,12 @@ from Utility import loadFileContents
 
 # https://en.wikipedia.org/wiki/Builder_pattern
 class JsFileBuilder:
-    COMMON_STOCKS_FILE: Final = 'sitePages/commonStocks.js'
-    COMMON_STOCKS_URI: Final = f'/{COMMON_STOCKS_FILE}'
+    COMMON_STOCKS_TEMPLATE: Final = 'sitePages/commonStocks.js'
+    COMMON_STOCKS_URI: Final = f'/{COMMON_STOCKS_TEMPLATE}'
 
     def __init__(self):
         self._pybars = Compiler()
-        self._portfolioPage = self._pybars.compile(loadFileContents(self.COMMON_STOCKS_FILE).decode('UTF-8'))
+        self._commonStocksTemplate = self._pybars.compile(loadFileContents(self.COMMON_STOCKS_TEMPLATE).decode('UTF-8'))
 
-    def makePortfolioPage(self, stockSymbols):
-        return self._portfolioPage({'stockSymbols': stockSymbols}).encode()
+    def makeCommonStocksFile(self, stockSymbols):
+        return self._commonStocksTemplate({'stockSymbols': stockSymbols}).encode()

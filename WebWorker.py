@@ -29,7 +29,7 @@ class WebWorker:
     _RESEARCH_URI: Final = f'/{_RESEARCH_NAME}'
 
     _NO_ERROR: Final = '&nbsp;'
-    _NO_VALUE: Final = '&nbsp;'
+    _EMPTY_HTML: Final = '&nbsp;'
 
     _IEX_API_KEY: Final = 'pk_069ce437622a4d38aed7a5cc927be3a8'
 
@@ -42,7 +42,7 @@ class WebWorker:
             '.js': 'text/javascript; charset=UTF-8'
         }
 
-    _ERROR_PREFIX: Final = '<P style="color: red; font-weight: bold;">'
+    _ERROR_PREFIX: Final = '<P class="error">'
     _ERROR_SUFFIX: Final = '</P>'
 
     def __init__(self, server, client):
@@ -101,7 +101,7 @@ class WebWorker:
         else:
             headers, body = self._makeMethodNotAllowed()
 
-        if headers is None:
+        if isNoneOrEmpty(headers):
             return self._makeNotFound()
 
         return headers, body
@@ -174,14 +174,12 @@ class WebWorker:
         return self._makePortfolioPage(self._NO_ERROR)
 
     def _browseToResearch(self, _):
-        headers = self._responseBuilder.makeOK()
-        body = self._htmlPageBuilder.makeResearchPage(self._NO_ERROR, self._NO_ERROR, self._NO_ERROR, self._NO_ERROR)  # TODO up to here
-        return headers, body
+        return self._makeResearchPage(self._NO_ERROR, '', '', self._EMPTY_HTML)
 
     def _browseToCommonStocks(self, _):
         symbols = self._iexApi.fetchSymbols()
         headers = self._responseBuilder.makeOK()
-        body = self._jsFileBuilder.makePortfolioPage(makeJavascriptSymbolArray(symbols))
+        body = self._jsFileBuilder.makeCommonStocksFile(makeJavascriptSymbolArray(symbols))
         return headers, body
 
     def _browseToArbitrary(self, request):
@@ -266,10 +264,6 @@ class WebWorker:
 
         return None
 
-    def _updateResearch(self, request):
-        # TODO
-        pass
-
     def _rejectPostRequest(self, _):
         return self._makeBadRequest()
 
@@ -306,4 +300,59 @@ class WebWorker:
         if quote is not None and quote['latestPrice'] is not None:
             return calculateGainOrLoss(float(quote['latestPrice']), oldPrice)
         
-        return self._NO_VALUE
+        return self._EMPTY_HTML
+
+    def _updateResearch(self, request):
+        errorMessage = self._NO_ERROR
+        statisticsHtml = self._EMPTY_HTML
+        companyNameJs = ''
+        dataPointsJs = ''
+
+        form = request.getFormVariables()
+
+        if 'stockSymbol' not in form or len(form['stockSymbol']) == 0:
+            errorMessage = self._makeErrorText('A <I>symbol</I> was not supplied. This field is required.')
+
+        else:
+            symbol = form['stockSymbol'].upper()
+
+            companyNameJs, statisticsHtml = self._makeStockStatisticsHtml(symbol)
+            if statisticsHtml == self._EMPTY_HTML:
+                errorMessage = self._makeErrorText(f'No statistics were returned for symbol <I>{symbol}</I>.')
+            else:
+                dataPointsJs = self._makeChartDataPointsJs(symbol)
+
+        return self._makeResearchPage(errorMessage, companyNameJs, dataPointsJs, statisticsHtml)
+
+    def _makeResearchPage(self, errorMessage, companyNameJs, dataPointsJs, statisticsHtml):
+        headers = self._responseBuilder.makeOK()
+        body = self._htmlPageBuilder.makeResearchPage(errorMessage, companyNameJs, dataPointsJs, statisticsHtml)
+        return headers, body
+
+    def _makeStockStatisticsHtml(self, symbol):
+        statistics = self._iexApi.fetchStatistics(symbol)
+        if isNoneOrEmpty(statistics):
+            return self._EMPTY_HTML
+
+        companyNameJs = statistics['companyName'] if 'companyName' in statistics else ''
+
+        statisticsHtml = f'<P>Symbol: <B>{symbol}</B></P>\n' + \
+                         f'<P>Company Name: {statistics["companyName"]}</P>\n' + \
+                         f'<P>PE ratio: {format(statistics["peRatio"], ".2f")}</P>\n' + \
+                         f'<P>Market Capitalization: {statistics["marketcap"]}</P>\n' + \
+                         f'<P>52 week high: {format(statistics["week52high"], ".2f")}</P>\n' + \
+                         f'<P>52 week low: {format(statistics["week52low"], ".2f")}</P>\n'
+        
+        return companyNameJs, statisticsHtml
+
+    def _makeChartDataPointsJs(self, symbol):
+        dataPoints = self._iexApi.fetchChart(symbol)
+        if isNoneOrEmpty(dataPoints):
+            return ''
+
+        js = ''
+        for dataPoint in dataPoints:
+            if 'date' in dataPoint and 'close' in dataPoint:
+                js += f'{{ label: "{dataPoint["date"]}", y: {dataPoint["close"]} }},\n'
+        
+        return js.rstrip(',')
