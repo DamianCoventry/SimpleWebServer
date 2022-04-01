@@ -55,6 +55,11 @@ class HttpRequest:
         """Returns true if a Content-Length header was received for this request, false otherwise"""
         return Http.CONTENT_LENGTH in self._headers
 
+    def getContentLength(self):
+        """Returns the value of the Content-Length header as an integer. Returns None if the
+        header is absent."""
+        return int(self._headers[Http.CONTENT_LENGTH]) if self.hasContentLength() else None
+
     def hasEmptyBody(self):
         """Returns true if no bytes were received for this request, false otherwise"""
         return isNoneOrEmpty(self._body)
@@ -73,7 +78,7 @@ class HttpRequest:
             return {}
 
         # Expecting the body bytes to be formatted like this:
-        #       "symbol=QTRX&quantity=100&price=0.85"
+        #       symbol=QTRX&quantity=100&price=0.85
 
         nameValueAssignments = self._body.decode('UTF-8').split(Http.FORM_VAR_SEP)  # split on '&' first
         if isNoneOrEmpty(nameValueAssignments):
@@ -84,8 +89,8 @@ class HttpRequest:
             nameValue = nameValueAssignment.split(Http.NAME_VALUE_SEP)  # split on '=' next
 
             # it's ok if there's no value, but there must be a key
-            if nameValue is not None:
-                form[nameValue[0]] = nameValue[1] if nameValue[1] is not None else ''
+            if not isNoneOrEmpty(nameValue):
+                form[nameValue[0]] = nameValue[1] if not isNoneOrEmpty(nameValue[1]) else ''
 
         return form
 
@@ -139,10 +144,12 @@ class HttpRequest:
             elif len(lines[i]) > 0:  # is it empty?
                 keyValue = lines[i].split(Http.HEADER_SEP)
 
-                if keyValue is not None and len(keyValue) > 0:
+                if not isNoneOrEmpty(keyValue):
                     # it's ok if there's no value, but there must be a key
                     if len(keyValue) > 1:
-                        # the Http.HEADER_SEP.join() bit is to restore any stripped ':' characters
+                        # the Http.HEADER_SEP.join() code after this comment is there to restore any
+                        # additionally stripped ':' characters, such as between the '127.0.0.1:8080'
+                        # IP address in the 'Host:' header
                         self._headers[keyValue[0].strip()] = Http.HEADER_SEP.join(keyValue[1:]).strip()
 
                     else:

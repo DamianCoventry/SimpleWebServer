@@ -17,8 +17,9 @@ from WebServer import WebServer
 os.environ['PYTHONUNBUFFERED'] = "1"
 
 try:
+    # create an instance of the server, then start listening for connections.
     server = WebServer(os.environ.get('PORT'))  # use Heroku's port number
-    server.start()
+    server.listen()
 
 except Exception as ex:
     logMessage(f'Exception caught: {ex}')
