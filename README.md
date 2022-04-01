@@ -14,7 +14,7 @@ To install the pybars3 library execute this command `pip install pybars3`
 
 ## Run the web server locally
 To run the web server locally execute this command line
-`python server.py`. By default, it listens on port `8080`. If you want to use a different
+`python3 Main.py`. By default, it listens on port `8080`. If you want to use a different
 port then create an environment variable named `PORT` with some other positive number.
 
 ## Docker container
