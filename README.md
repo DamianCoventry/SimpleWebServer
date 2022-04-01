@@ -1,10 +1,12 @@
 # 159.352-Web-Dev-Assgn1
 Create a simple web server in python.
 
-## Build dependencies
-This python script requires python v3.10 or later. Download a copy here https://www.python.org/downloads/
+This project is hosted in Heroku https://web-dev-assgn1-159352.herokuapp.com/
 
-This script uses the `requests` library, and the "handlebars for python" library known as `pybars3`
+## Build dependencies
+This project requires python v3.10 or later. Download a copy here https://www.python.org/downloads/
+
+This project uses the `requests` library, and the "handlebars for python" library known as `pybars3`
 
 To install the requests library execute this command `pip install requests` 
 
