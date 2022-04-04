@@ -80,13 +80,15 @@ class WebClient:
             if self._request.hasEmptyBody():
                 rawBytes = self._socket.recv(self._request.getContentLength())  # we need to read again
                 self._request.setBody(rawBytes)
-                logMessage(f'Has content, executed a second receive, {len(self._request.getBody())} bytes')
+                logMessage(f'Has content, performed a second receive, {len(self._request.getBody())} bytes')
+
             else:
                 logMessage(f'Has content, already received it, {len(self._request.getBody())} bytes')
 
         # dump some additional logging information to stdout
         if not self._request.isEmpty():
             logMessage(self._request.getMethod() + ' ' + self._request.getPath())
+
             form = self._request.getFormVariables()
             if len(form) > 0:
                 logMessage(form)

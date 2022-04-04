@@ -25,8 +25,7 @@ from JsFileBuilder import JsFileBuilder
 class WebWorker:
     """
     This class implements the logic for the portfolio website. The start() method is the
-    only public method. All other methods implement the rules of the website as private
-    members of this class
+    only public method. All other private methods implement the rules of the website.
     """
 
     _PORTFOLIO_NAME: Final = 'portfolio'
@@ -263,7 +262,7 @@ class WebWorker:
         valid values within the web form"""
         form = request.getFormVariables()
 
-        errorMessageHtml = self._validateFormVariables(form)  # rule the validation rules
+        errorMessageHtml = self._validateFormVariables(form)  # run the validation rules
         if not isNoneOrEmpty(errorMessageHtml):
             # build the portfolio page with an error message at the top
             return self._makePortfolioPage(errorMessageHtml)

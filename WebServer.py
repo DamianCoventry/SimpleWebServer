@@ -46,7 +46,7 @@ class WebServer:
         within its own thread.
 
         After accepting a new connection, if the server didn't load a password from disk, then
-        it immediately sends an HTTP 503 response code to the client. For this use case, the any
+        it immediately sends an HTTP 503 response code to the client. For this use case, any
         received data from the client are ignored.
 
         If the accepted connection sends no data, then the server responds with an HTTP 400
@@ -58,9 +58,9 @@ class WebServer:
         nor POST results in an HTTP 405 response code being sent to the client.
         
         If the server catches any thrown exception during the processing of an accepted connection,
-        then it sends an HTTP 500 response code being sent to the client.
+        then it sends an HTTP 500 response code to the client.
 
-        For all other use cases,the server sends an HTTP 200 response code to the client.
+        For all other use cases, the server sends an HTTP 200 response code to the client.
         """
 
         self._socket.listen(1)
